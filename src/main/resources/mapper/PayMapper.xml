@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.graduate.hospital_manage.mapper.PayMapper">
+
+    
+    <select id="selectWardCostByHid" resultType="com.graduate.hospital_manage.model.PayItem">
+        SELECT wt.`name` as item_name,
+               wt.`price` as item_price, TIMESTAMPDIFF(DAY, un.`in_hospital_time`, un.`out_hospital_time`) AS item_amount
+
+        FROM unhospitalized un LEFT JOIN ward w ON un.`wid`=  w.`wid`
+                               LEFT JOIN ward_type wt ON w.`wt_id` = wt.`id`
+        WHERE un.`uid` = #{hid}
+    </select>
+
+
+    <select id="selectMedicineCost" resultType="com.graduate.hospital_manage.model.PayItem">
+        SELECT distribu_amount AS item_amount, m.name AS item_name, m.price as item_price
+        FROM `medicine_distribution` md LEFT JOIN medicine m ON md.mid = m.mid
+        WHERE md.hid = #{hid}
+        GROUP BY m.`mid`, distribu_amount, hid, m.`name`, m.price, m.name
+    </select>
+
+
+    <select id="selectRtnMoney" resultType="com.graduate.hospital_manage.model.PayReturn">
+        SELECT
+            medicine_name AS item_name,
+            price as item_price,
+            rtn_amount AS item_amount
+        FROM `medicine_return` mr LEFT JOIN medicine m ON m.`name` = mr.`medicine_name`
+        WHERE mr.hid = #{hid}
+        GROUP BY medicine_name, price, rtn_amount
+
+    </select>
+
+    <select id="selectPagePayRecord" resultType="map">
+        select p.*, pt.name as typeName
+        from pay p left join pay_type pt on p.type_id = pt.id
+
+        <where>
+            <if test="pay.hid != null and pay.hid != ''">
+                p.hid = #{pay.hid}
+            </if>
+            <if test="pay.name != null and pay.name != ''">
+                and p.name like concat('%', #{pay.name}, '%')
+            </if>
+            <if test="pay.payDate != null">
+                and p.pay_date >= #{pay.payDate}
+            </if>
+        </where>
+    </select>
+</mapper>

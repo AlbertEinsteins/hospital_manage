@@ -1,0 +1,10 @@
+logging:
+  config: classpath:logback-spring.xml
+server:
+  port: 8000
+spring:
+  datasource:
+    url: jdbc:mysql://42.193.109.34:3306/hospitalized?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: jfh681521
+    type: com.alibaba.druid.pool.DruidDataSource

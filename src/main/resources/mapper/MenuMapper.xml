@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.graduate.hospital_manage.mapper.MenuMapper">
+
+    <resultMap id="menu" type="com.graduate.hospital_manage.model.Menu">
+        <id column="menu_id" property="menuId"/>
+        <result column="name" property="name"/>
+        <result column="url" property="url"/>
+        <result column="pid" property="pid"/>
+        <result column="orders" property="orders"/>
+        <result column="icon" property="icon"/>
+        <result column="rid" property="rid"/>
+    </resultMap>
+
+
+    <select id="selectAllWithRid" resultType="com.graduate.hospital_manage.model.Menu">
+        SELECT m.*, r.rid
+        FROM menu m LEFT JOIN role_menu_relation rmr ON m.`menu_id` = rmr.`menu_id`
+                    LEFT JOIN role r ON r.`rid` = rmr.`role_id`
+    </select>
+</mapper>

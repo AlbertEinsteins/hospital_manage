@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.graduate.hospital_manage.mapper.UserMapper">
+
+    
+    <select id="selectPageResult" resultType="map">
+        SELECT u.*, r.`name` AS typeName
+        FROM user u LEFT JOIN role r ON u.`rid` = r.`rid`
+
+        <where>
+            <if test="ex.rid != null and ex.rid != ''">
+              u.rid = #{ex.rid}
+            </if>
+            <if test="ex.username != null and ex.username != ''">
+              and u.username like concat('%', #{ex.username}, '%')
+            </if>
+            <if test="ex.fullname != null and ex.rid != ''">
+              and u.fullname like concat('%', #{ex.fullname}, '%')
+            </if>
+            <if test="ex.registTime != null">
+              and  u.regist_time >= #{ex.registTime}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.graduate.hospital_manage.mapper.EnHospitalizedMapper">
+
+    
+    <select id="selectByEnhospitalCondition" resultType="map">
+        SELECT h.*, dt.`name` AS typeName
+        FROM hospitalized h LEFT JOIN doctor d ON h.`did` = d.`did`
+                            LEFT JOIN doctor_type dt ON d.`tid` = dt.`tid`
+        <where>
+            h.is_active = 1
+            <if test="example.tid != null">
+                and dt.tid = #{example.tid}
+            </if>
+            <if test="example.data.hid != null and example.data.hid != ''">
+                and h.hid = #{example.data.hid}
+            </if>
+            <if test="example.data.wid != null and example.data.wid != ''">
+                and h.wid = #{example.data.wid}
+            </if>
+            <if test="example.data.enrollTime != null">
+                and h.enroll_time >= #{example.data.enrollTime}
+            </if>
+            <if test="example.data.name != null and example.data.name != ''">
+                and h.name like concat('%', #{example.data.name}, '%')
+            </if>
+            <if test="example.data.sid != null and example.data.sid != ''">
+                and h.sid = #{example.data.sid}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectDoctorByHid" resultType="com.graduate.hospital_manage.model.Doctor">
+        SELECT d.*
+        FROM hospitalized h LEFT JOIN doctor d ON h.`did` = d.`did`
+        WHERE h.`hid` = #{hid}
+    </select>
+
+    <select id="selectStatisticInByDocTypes" resultType="map">
+        SELECT
+            dt.`tid`,
+            dt.`name`,
+            COUNT(dt.`name`) AS sumOfIn
+        FROM
+            doctor_type dt
+            JOIN doctor d ON dt.`tid` = d.`tid`
+            JOIN hospitalized h ON h.`did` = d.`did`
+        <where>
+            <if test="fromDate != null">
+                h.`enroll_time` >= #{fromDate}
+            </if>
+            <if test="toDate != null">
+                and h.`enroll_time` &lt;= #{toDate}
+            </if>
+        </where>
+        GROUP BY dt.`tid`,
+                 dt.`name`
+        order by dt.`tid` asc
+    </select>
+
+
+    <select id="selectStatisticOutByDocTypes" resultType="map">
+        SELECT
+            dt.`tid`,
+            dt.`name`,
+            COUNT(dt.`name`) AS sumOfOut
+        FROM
+            doctor_type dt
+                JOIN doctor d ON dt.`tid` = d.`tid`
+                JOIN unhospitalized unh ON unh.`doctor_name` = d.`name`
+        <where>
+            <if test="fromDate != null">
+                unh.`out_hospital_time` >= #{fromDate}
+            </if>
+            <if test="toDate != null">
+                unh.`out_hospital_time` &lt;= #{fromDate}
+            </if>
+        </where>
+        GROUP BY
+            dt.`tid`,
+            dt.`name`
+        order by dt.`tid` asc
+
+    </select>
+
+    <select id="selectStatisticOfWard" resultType="map">
+        SELECT
+            dt.`tid`,
+            dt.`name`,
+            COUNT(s.`sid`) AS total,
+            IF(SUM(s.`status`), SUM(s.`status`), 0) AS used_total
+        FROM doctor_type dt LEFT JOIN ward w ON dt.`tid` = w.`dt_id`
+                            LEFT JOIN sickbed s ON s.`wid` = w.`wid`
+        <where>
+            <if test="tid">
+                dt.`tid` = #{tid}
+            </if>
+        </where>
+        GROUP BY
+            dt.`tid`,
+            dt.`name`
+    </select>
+</mapper>

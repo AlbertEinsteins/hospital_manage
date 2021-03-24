@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.graduate.hospital_manage.mapper.OutHospitalizedMapper">
+
+
+    <select id="selectPageResult" resultType="map">
+        SELECT un.*
+        FROM unhospitalized un LEFT JOIN doctor d ON un.`doctor_name` = d.`name`
+                               LEFT JOIN doctor_type dt ON dt.`tid` = d.`tid`
+        <where>
+            <if test="ex.tid != null and ex.tid != ''">
+                d.tid = #{ex.tid}
+            </if>
+            <if test="ex.data.uid != null and ex.data.uid != ''">
+                and un.uid = #{ex.data.uid}
+            </if>
+            <if test="ex.data.name != null and ex.data.name != ''">
+                and un.name like concat('%', #{ex.data.name}, '%')
+            </if>
+            <if test="ex.data.inTime != null">
+                and un.in_hospital_time >= #{ex.data.inTime}
+            </if>
+            <if test="ex.data.outTime != null">
+                and un.out_hospital_time &lt;= #{ex.data.outTime}
+            </if>
+
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.graduate.hospital_manage.mapper.DoctorMapper">
+
+    
+    <select id="selectDoctorsWithPos" resultType="map">
+        SELECT d.*, dp.name as posName, dt.name as typeName
+        FROM doctor d LEFT JOIN doctor_position dp ON d.pid = dp.`pid`
+                      LEFT JOIN doctor_type dt ON d.`tid` = dt.`tid`
+        <where>
+            <if test="doctor.tid != null">
+                d.tid = #{doctor.tid}
+            </if>
+            <if test="doctor.pid != null">
+                and d.pid = #{doctor.pid}
+            </if>
+            <if test="doctor.name != null">
+                and d.name like concat('%', #{doctor.name}, '%')
+            </if>
+            <if test="doctor.hireDate != null">
+                and d.hiredate >= #{doctor.hireDate}
+            </if>
+            <if test="doctor.isRetire != null">
+                and d.is_retire = #{doctor.isRetire}
+            </if>
+        </where>
+    </select>
+</mapper>
