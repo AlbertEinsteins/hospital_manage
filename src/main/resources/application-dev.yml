@@ -14,9 +14,11 @@ spring:
   redis:
     host: 42.193.109.34
     port: 6800
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# mybatis 打印到控制台，详细日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 
 # 民族对应的字典码

@@ -1,13 +1,16 @@
 package com.graduate.hospital_manage.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Maps;
 import com.graduate.hospital_manage.model.EnHospitalized;
 import com.graduate.hospital_manage.model.MedicineDistribution;
+import com.graduate.hospital_manage.model.constant.ELogLevel;
 import com.graduate.hospital_manage.response.Result;
 import com.graduate.hospital_manage.service.EnHospitalizedService;
 import com.graduate.hospital_manage.service.MedicineDistributeService;
+import com.graduate.hospital_manage.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +30,9 @@ public class MedicinedistributeController {
     @Autowired
     private EnHospitalizedService enHospitalizedService;
 
+    @Autowired
+    private LogUtils logUtils ;
+
     @PostMapping("/dis")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public Result distributeMedicine(@RequestBody MedicineDistribution medicineDistribution) {
@@ -36,10 +42,13 @@ public class MedicinedistributeController {
         if (!optional.isPresent()) {
             return Result.FAILURE("住院号不存在!");
         }
-        if(!optional.get().getIsActive()) {
+
+        EnHospitalized hospitalized = optional.get();
+        if(!hospitalized.getIsActive()) {
             return Result.FAILURE("该病人已经出院") ;
         }
-
+        this.logUtils.writeLog(ELogLevel.INFO, "药品分发", String.format("%s: %s瓶/个 %s",
+                hospitalized.getName(), medicineDistribution.getName(), medicineDistribution.getDisAmount())) ;
         this.medicineDistributeService.saveAndDeStock(medicineDistribution);
         return Result.SUCCESS();
     }

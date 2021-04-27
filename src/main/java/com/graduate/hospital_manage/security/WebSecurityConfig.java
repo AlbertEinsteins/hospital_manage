@@ -52,6 +52,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder() ;
     }
 
+    /**
+     * 拦截请求配置
+     * @param http
+     * @throws Exception
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
@@ -59,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/menu/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/kafka/**").permitAll()
                 .anyRequest().authenticated() ;
 
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class) ;

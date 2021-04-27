@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.graduate.hospital_manage.dto.MedicineDto;
 import com.graduate.hospital_manage.model.Medicine;
+import com.graduate.hospital_manage.model.constant.ELogLevel;
 import com.graduate.hospital_manage.response.Result;
 import com.graduate.hospital_manage.service.MedicineService;
+import com.graduate.hospital_manage.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
@@ -20,10 +22,16 @@ public class MedicineController {
     @Autowired
     private MedicineService medicineService ;
 
+    @Autowired
+    private LogUtils logUtils ;
+
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public Result addMedicine(@RequestBody Medicine medicine) {
         this.medicineService.inStock(medicine) ;
+
+        this.logUtils.writeLog(ELogLevel.INFO, "药品入库", String.format("药品：%s, 录入%d个",
+                medicine.getName(), medicine.getAmount()));
         return Result.SUCCESS() ;
     }
 

@@ -8,6 +8,7 @@ import com.graduate.hospital_manage.dto.PayDto;
 import com.graduate.hospital_manage.exception.MessageException;
 import com.graduate.hospital_manage.model.EnHospitalized;
 import com.graduate.hospital_manage.model.Pay;
+import com.graduate.hospital_manage.model.constant.ELogLevel;
 import com.graduate.hospital_manage.model.constant.PayStatus;
 import com.graduate.hospital_manage.response.Result;
 import com.graduate.hospital_manage.response.ResultCode;
@@ -15,6 +16,7 @@ import com.graduate.hospital_manage.service.EnHospitalizedService;
 import com.graduate.hospital_manage.service.OutHospitalizedService;
 import com.graduate.hospital_manage.service.PayService;
 import com.graduate.hospital_manage.service.PayTypeService;
+import com.graduate.hospital_manage.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -37,13 +39,15 @@ public class PayController {
     @Autowired
     private OutHospitalizedService outHospitalizedService;
 
+    @Autowired
+    private LogUtils logUtils ;
+
     @PostMapping("/pre_pay")
     public Result enrollRecord(@RequestBody Pay pay) {
 
         //TODO 预缴费
         Optional<EnHospitalized> optional = this.enHospitalizedService
                 .findOneById(pay.getHid());
-
         if(!optional.isPresent()) {
             return Result.FAILURE("住院号不存在!") ;
         }
@@ -55,11 +59,12 @@ public class PayController {
             Pay existPay = byHid.get();
             existPay.setPreAmount(existPay.getPreAmount().add(pay.getPreAmount())) ;
             this.payService.updateById(existPay) ;
-        }
-        else {
+        } else {
             this.payService.save(pay) ;
         }
 
+        this.logUtils.writeLog(ELogLevel.INFO, "预缴费",
+                String.format("缴费人:%s, 缴费费用: %s", pay.getName(), pay.getPreAmount()));
         return Result.SUCCESS();
     }
 
@@ -101,6 +106,16 @@ public class PayController {
     }
 
 
+    @PutMapping("/doSuccess")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    public Result paySuccess(@RequestParam("hid") String hid) {
+        this.payService.findByHid(hid)
+                .ifPresent(pay -> {
+                    pay.setStatus(PayStatus.PAY.status()) ;
+                    this.payService.updateById(pay) ;
+                });
+        return Result.SUCCESS() ;
+    }
 
 
     @GetMapping("/paytypes")

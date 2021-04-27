@@ -30,6 +30,7 @@ public class Pay implements Serializable {
     @TableField("pay_date")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime payDate ;
+
     @TableField("receive_name")
     private String        receiveName ;
     private Integer       status ;

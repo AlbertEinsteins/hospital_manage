@@ -185,6 +185,7 @@
             <appender-ref ref="ERROR_FILE" />
         </root>
     </springProfile>
+
     <!--线上环境:-->
     <springProfile name="prod">
         <root level="info">
@@ -195,6 +196,7 @@
             <appender-ref ref="ERROR_FILE" />
         </root>
     </springProfile>
+
     <!--测试环境:-->
     <springProfile name="test">
         <root level="info">

@@ -1,7 +1,7 @@
-package com.graduate.hospital_manage.annotation.cache.handler;
+package com.graduate.hospital_manage.annotation.aop.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graduate.hospital_manage.annotation.cache.Cache;
+import com.graduate.hospital_manage.annotation.aop.Cache;
 import com.graduate.hospital_manage.utils.RedisClient;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -35,7 +35,12 @@ public class CacheHandler {
     public void cache() { }
 
 
-
+    /**
+     * 对加有@Cache注解的方法返回值进行缓存
+     * @param proceedingJoinPoint 切入点，可以获取方法签名
+     * @return
+     * @throws Throwable
+     */
     @Around("cache()")
     public Object doAround (ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
@@ -56,11 +61,10 @@ public class CacheHandler {
             Object result = proceedingJoinPoint.proceed();
             String jsonStr = objectMapper.writeValueAsString(result);
             if(cache.expireTime() > 0) {
-                this.redisClient.hset(cacheKey, cache.value(),
+                redisClient.hset(cacheKey, cache.value(),
                         jsonStr, cache.expireTime()) ;
-            }
-            else {
-                this.redisClient.hset(cacheKey, cache.value(), jsonStr) ;
+            } else {
+                redisClient.hset(cacheKey, cache.value(), jsonStr) ;
             }
             return result ;
         }

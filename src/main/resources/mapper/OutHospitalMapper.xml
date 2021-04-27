@@ -7,9 +7,10 @@
 
 
     <select id="selectPageResult" resultType="map">
-        SELECT un.*
+        SELECT un.*, status
         FROM unhospitalized un LEFT JOIN doctor d ON un.`doctor_name` = d.`name`
                                LEFT JOIN doctor_type dt ON dt.`tid` = d.`tid`
+                              LEFT JOIN pay p ON p.`hid` = un.`uid`
         <where>
             <if test="ex.tid != null and ex.tid != ''">
                 d.tid = #{ex.tid}

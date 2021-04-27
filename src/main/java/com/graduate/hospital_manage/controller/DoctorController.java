@@ -1,12 +1,15 @@
 package com.graduate.hospital_manage.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.graduate.hospital_manage.dto.DoctorDto;
 import com.graduate.hospital_manage.model.Doctor;
+import com.graduate.hospital_manage.model.constant.ELogLevel;
 import com.graduate.hospital_manage.response.Result;
 import com.graduate.hospital_manage.service.DoctorService;
+import com.graduate.hospital_manage.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,9 @@ public class DoctorController {
 
     @Autowired
     private DoctorService doctorService ;
+
+    @Autowired
+    private LogUtils logUtils ;
 
     @GetMapping("/getAll")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'FRONT', 'NURSE')")
@@ -39,6 +45,9 @@ public class DoctorController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public Result save(@RequestBody Doctor doctor) {
+
+        this.logUtils.writeLog(ELogLevel.INFO, "医生录入",
+                String.format("入职医生姓名: %s, 职位: %d", doctor.getName(), doctor.getTid())) ;
         return Result.SUCCESS(this.doctorService.save(doctor)) ;
     }
 
@@ -54,6 +63,9 @@ public class DoctorController {
     @PreAuthorize("hasRole('ADMIN')")
     public Result updateById(@Valid @RequestBody Doctor doctor) {
         this.doctorService.updateById(doctor) ;
+        this.logUtils.writeLog(ELogLevel.INFO, "医生信息修改",
+                JSONUtil.toJsonStr(doctor)) ;
+
         return Result.SUCCESS() ;
     }
 

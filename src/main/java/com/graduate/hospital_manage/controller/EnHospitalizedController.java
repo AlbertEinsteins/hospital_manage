@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.graduate.hospital_manage.dto.EnHospitalizedDto;
 import com.graduate.hospital_manage.model.EnHospitalized;
+import com.graduate.hospital_manage.model.constant.ELogLevel;
 import com.graduate.hospital_manage.response.Result;
 import com.graduate.hospital_manage.service.EnHospitalizedService;
+import com.graduate.hospital_manage.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/en")
 public class EnHospitalizedController {
+    @Autowired
+    private LogUtils logUtils ;
 
     @Autowired
     private EnHospitalizedService enHospitalizedService ;
@@ -32,8 +36,11 @@ public class EnHospitalizedController {
             enHospitalized.setIsActive(true) ;
 
             this.enHospitalizedService.saveWithSickBed(enHospitalized) ;
+
+            logUtils.writeLog(ELogLevel.INFO, "用户住院登记", enHospitalized.getName());
             return Result.SUCCESS() ;
         }
+
         return Result.FAILURE("id已经存在") ;
     }
 

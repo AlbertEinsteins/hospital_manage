@@ -1,6 +1,4 @@
-package com.graduate.hospital_manage.annotation.cache;
-
-import org.springframework.core.annotation.AliasFor;
+package com.graduate.hospital_manage.annotation.aop;
 
 import java.lang.annotation.*;
 

@@ -16,4 +16,5 @@ public class MessageException extends Exception {
     private ResultCode code ;  //状态码
 
     private String message ;
+
 }

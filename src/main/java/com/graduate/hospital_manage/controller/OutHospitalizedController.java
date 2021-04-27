@@ -7,11 +7,13 @@ import com.graduate.hospital_manage.dto.OutHospitalDto;
 import com.graduate.hospital_manage.exception.MessageException;
 import com.graduate.hospital_manage.model.EnHospitalized;
 import com.graduate.hospital_manage.model.OutHospitalized;
+import com.graduate.hospital_manage.model.constant.ELogLevel;
 import com.graduate.hospital_manage.response.Result;
 import com.graduate.hospital_manage.response.ResultCode;
 import com.graduate.hospital_manage.service.EnHospitalizedService;
 import com.graduate.hospital_manage.service.OutHospitalizedService;
 import com.graduate.hospital_manage.service.PayService;
+import com.graduate.hospital_manage.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,15 +31,16 @@ public class OutHospitalizedController {
     private OutHospitalizedService outHospitalizedService ;
 
     @Autowired
-    private PayService payService ;
+    private LogUtils logUtils ;
 
     @PostMapping("/enroll")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
     public Result outEnroll(@RequestParam("hid") String hid) throws MessageException {
         //判断是否存在
-        this.enHospitalizedService
-                .findOneById(hid).orElseThrow(() ->
-                    new MessageException(ResultCode.Fail, "该住院号不存在")) ;
+        EnHospitalized enHospitalized = this.enHospitalizedService.getById(hid) ;
+        if (null == enHospitalized) {
+            throw new MessageException(ResultCode.Fail, "该住院号不存在") ;
+        }
 
         Optional<OutHospitalized> optional = this.outHospitalizedService.findOnebyHid(hid) ;
         if (optional.isPresent()) {
@@ -46,6 +49,8 @@ public class OutHospitalizedController {
 
         //保存出院记录，并生成订单
         this.outHospitalizedService.saveOut(hid) ;
+        this.logUtils.writeLog(ELogLevel.INFO, "出院登记",
+                String.format("出院人: %s", enHospitalized.getName()));
         return Result.SUCCESS() ;
     }
 

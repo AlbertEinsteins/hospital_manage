@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,8 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisClient {
 
-    @Autowired
-    @Qualifier("myredisTemplate")
+    @Resource(name = "myredisTemplate")
     private RedisTemplate redisTemplate;
 
     /**

@@ -1,14 +1,19 @@
 package com.graduate.hospital_manage.controller;
 
 import cn.hutool.crypto.digest.BCrypt;
+import cn.hutool.json.JSONUtil;
+import com.graduate.hospital_manage.annotation.aop.Systemlog;
 import com.graduate.hospital_manage.dto.request.LoginRequest;
 import com.graduate.hospital_manage.model.User;
+import com.graduate.hospital_manage.model.constant.ELogLevel;
 import com.graduate.hospital_manage.response.JwtResponse;
 import com.graduate.hospital_manage.response.Result;
 import com.graduate.hospital_manage.security.jwt.JwtUtils;
 import com.graduate.hospital_manage.security.services.UserDetailImpl;
 import com.graduate.hospital_manage.service.RoleService;
 import com.graduate.hospital_manage.service.UserService;
+import com.graduate.hospital_manage.utils.LogUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +31,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     @Autowired
@@ -37,7 +43,8 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager ;
 
-
+    @Autowired
+    private LogUtils logUtils ;
     @Autowired
     private JwtUtils jwtUtils ;
 
@@ -48,10 +55,11 @@ public class AuthController {
         }
 
         user.setAmount(BigDecimal.ZERO) ;
-
         user.setPassword(BCrypt.hashpw(user.getPassword())) ;
         user.setRegistTime(LocalDateTime.now());
         this.userService.save(user) ;
+
+        logUtils.writeLog(ELogLevel.INFO, "注册成功", user.getUsername()) ;
         return Result.SUCCESS() ;
     }
 
@@ -70,6 +78,7 @@ public class AuthController {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()) ;
 
+        logUtils.writeLog(ELogLevel.INFO, "登录成功", loginRequest.getUsername()) ;
         return ResponseEntity.ok(new JwtResponse(
                 jwt,
                 userDetail.getRid(),

@@ -7,7 +7,7 @@
 
     
     <select id="selectByEnhospitalCondition" resultType="map">
-        SELECT h.*, dt.`name` AS typeName
+        SELECT h.*, dt.`name` AS typeName, d.name as doctorName
         FROM hospitalized h LEFT JOIN doctor d ON h.`did` = d.`did`
                             LEFT JOIN doctor_type dt ON d.`tid` = dt.`tid`
         <where>
