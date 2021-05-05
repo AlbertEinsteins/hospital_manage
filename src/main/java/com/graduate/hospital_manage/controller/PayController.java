@@ -17,6 +17,7 @@ import com.graduate.hospital_manage.service.OutHospitalizedService;
 import com.graduate.hospital_manage.service.PayService;
 import com.graduate.hospital_manage.service.PayTypeService;
 import com.graduate.hospital_manage.utils.LogUtils;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -109,6 +110,8 @@ public class PayController {
     @PutMapping("/doSuccess")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public Result paySuccess(@RequestParam("hid") String hid) {
+        this.logUtils.writeLog(ELogLevel.INFO, "支付成功（返还成功）",
+                MessageFormatter.format("住院号：{}, 支付成功", hid).getMessage()) ;
         this.payService.findByHid(hid)
                 .ifPresent(pay -> {
                     pay.setStatus(PayStatus.PAY.status()) ;

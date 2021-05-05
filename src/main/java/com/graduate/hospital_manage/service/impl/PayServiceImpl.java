@@ -72,7 +72,8 @@ public class PayServiceImpl extends ServiceImpl<PayMapper, Pay>
         return result ;
     }
 
-    private void transferRtnValue(String hid, List<Map> result, Pay pay, List<?> list) {
+    private void transferRtnValue(String hid, List<Map> result,
+                                  Pay pay, List<?> list) {
         list.forEach(item -> {
             Map itemMap  = Maps.newHashMap() ;
             itemMap.put("hid", hid) ;

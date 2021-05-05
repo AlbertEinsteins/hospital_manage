@@ -31,14 +31,14 @@ public class CacheHandler {
     @Autowired
     private ObjectMapper objectMapper ;
 
-    @Pointcut("execution(public * com.graduate.hospital_manage.service.impl.*.*(..))")
+    @Pointcut("@annotation(com.graduate.hospital_manage.annotation.aop.Cache)")
     public void cache() { }
 
 
     /**
      * 对加有@Cache注解的方法返回值进行缓存
      * @param proceedingJoinPoint 切入点，可以获取方法签名
-     * @return
+     * @return 方法的返回值
      * @throws Throwable
      */
     @Around("cache()")

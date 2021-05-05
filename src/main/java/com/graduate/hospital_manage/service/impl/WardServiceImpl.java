@@ -58,4 +58,10 @@ public class WardServiceImpl extends ServiceImpl<WardMapper, Ward>
     public List<Ward> findByExample(Ward example) {
         return this.list(Wrappers.query(example)) ;
     }
+
+    @Override
+    public List<Ward> availableWards() {
+        //获取所有
+        return getBaseMapper().selectAvailableWards();
+    }
 }

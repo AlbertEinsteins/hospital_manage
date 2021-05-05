@@ -9,6 +9,9 @@ import com.graduate.hospital_manage.model.SickBed;
 import com.graduate.hospital_manage.service.SickBedService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class SickBedServiceImpl extends ServiceImpl<SickBedMapper, SickBed>
     implements SickBedService {

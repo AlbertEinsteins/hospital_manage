@@ -11,8 +11,6 @@ import java.util.Map;
 public interface DoctorService extends IService<Doctor> {
     List<Doctor> findByExample(Doctor example) ;
 
-    IPage<Doctor> pageByExample(Doctor cond, Page<Doctor> page) ;
-
     IPage<Map> getPageByExample(Doctor cond, Page<Doctor> page) ;
 
 }

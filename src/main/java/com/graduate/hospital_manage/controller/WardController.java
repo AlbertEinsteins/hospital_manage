@@ -43,10 +43,14 @@ public class WardController {
         return Result.SUCCESS(this.wardService.findByExample(ward)) ;
     }
 
+    /**
+     * 获取所有的可利用的病房
+     * @return
+     */
     @GetMapping("/getAll")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'NURSE', 'FRONT')")
     public Result getAll() {
-        return Result.SUCCESS(this.wardService.list()) ;
+        return Result.SUCCESS(this.wardService.availableWards()) ;
     }
 
 }

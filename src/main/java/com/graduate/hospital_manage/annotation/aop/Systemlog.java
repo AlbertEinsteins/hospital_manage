@@ -6,9 +6,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Systemlog {
-
     //操作描述
     String value() default "" ;
 
+    //操作状态、具体操作内容细节等等
     String operate() default "" ;
+
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.graduate.hospital_manage.mapper.WardMapper">
+    <resultMap id="ward" type="com.graduate.hospital_manage.model.Ward">
+        <id column="wid" property="wid"/>
+        <result column="dt_id" property="doctorTypeId"/>
+        <result column="wt_id" property="wardTypeId"/>
+        <result column="capacity" property="capacity"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    
+    <select id="selectAvailableWards" resultMap="ward">
+        SELECT
+            w.*
+        FROM
+          ward w
+        JOIN (
+            SELECT
+                wid
+            FROM
+                sickbed s
+            WHERE s.`status` = 0
+            GROUP BY wid
+        ) temp ON w.`wid` = temp.wid
+    </select>
+</mapper>

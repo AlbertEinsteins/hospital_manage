@@ -22,11 +22,6 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor>
     }
 
     @Override
-    public IPage<Doctor> pageByExample(Doctor cond, Page<Doctor> page) {
-        return null;
-    }
-
-    @Override
     public IPage<Map> getPageByExample(Doctor cond, Page<Doctor> page ) {
         return this.getBaseMapper().selectDoctorsWithPos(page, cond) ;
     }

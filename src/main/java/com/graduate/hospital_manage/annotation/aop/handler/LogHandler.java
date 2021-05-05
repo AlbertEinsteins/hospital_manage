@@ -22,7 +22,7 @@ public class LogHandler {
     private LogUtils logUtils ;
 
 
-    @Pointcut("execution(public * com.graduate.hospital_manage.controller.*.*(..))")
+    @Pointcut("@annotation(com.graduate.hospital_manage.annotation.aop.Systemlog)")
     public void pointCut() { }
 
     /**

@@ -18,4 +18,7 @@ public interface WardService extends IService<Ward> {
     IPage<Ward> pageResult(Integer pagenum, Integer pagesize) ;
 
     List<Ward> findByExample(Ward example) ;
+
+    //获取可利用的病房列表
+    List<Ward> availableWards();
 }
