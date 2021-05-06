@@ -50,5 +50,6 @@
                 and p.pay_date >= #{pay.payDate}
             </if>
         </where>
+        order by p.pay_date desc
     </select>
 </mapper>

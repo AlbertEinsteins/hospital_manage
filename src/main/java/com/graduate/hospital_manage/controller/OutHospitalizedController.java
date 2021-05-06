@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,7 +48,6 @@ public class OutHospitalizedController {
         if (optional.isPresent()) {
             return Result.FAILURE("该用户已经出院，若未结账，请前往结账") ;
         }
-
         //保存出院记录，并生成订单
         this.outHospitalizedService.saveOut(hid) ;
         this.logUtils.writeLog(ELogLevel.INFO, "出院登记",
