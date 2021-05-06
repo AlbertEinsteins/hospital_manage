@@ -68,6 +68,7 @@ public class OutHospitalizedServiceImpl extends ServiceImpl<OutHospitalizedMappe
                     .setIsMale(enHospitalized.getIsMale())
                     .setName(enHospitalized.getName()) ;
 
+            //登记
             this.outHospitalizedService.save(outHospitalized) ;
             //更新住院状态
             this.enHospitalizedService.updateActiveStatusById(hid);
