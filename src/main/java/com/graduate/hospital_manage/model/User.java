@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class User implements Serializable {
     @TableId(type = IdType.ID_WORKER_STR)
-    @NotBlank
     private String uid ;
 
     @NotBlank
@@ -38,7 +37,6 @@ public class User implements Serializable {
 
     @NotNull
     private Integer rid ;
-
     @Size(max = 32)
     private String phone ;
 
