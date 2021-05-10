@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.graduate.hospital_manage.mapper.DoctorMapper;
 import com.graduate.hospital_manage.model.Doctor;
+import com.graduate.hospital_manage.model.EnHospitalized;
 import com.graduate.hospital_manage.service.DoctorService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,19 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor>
 
     @Override
     public IPage<Map> getPageByExample(Doctor cond, Page<Doctor> page ) {
-        return this.getBaseMapper().selectDoctorsWithPos(page, cond) ;
+        return getBaseMapper().selectDoctorsWithPos(page, cond) ;
+    }
+
+    @Override
+    public IPage<Map> findByUsername(String username, Integer isActive, Page<Map> page) {
+        return getBaseMapper().selectPatientsWithDoctorusername(page, username, isActive);
+    }
+
+    @Override
+    public IPage<Map> findByUsername(String hid,
+                                     String username,
+                                     LocalDateTime startTime,
+                                     LocalDateTime endTime, Page<Map> page) {
+        return getBaseMapper().selectPatientsInActiveWithDoctorusername(page, username, hid, startTime, endTime);
     }
 }

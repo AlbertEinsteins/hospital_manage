@@ -1,10 +1,13 @@
 package com.graduate.hospital_manage.model.constant;
 
 public enum ERole {
+    /**
+     * rid要和数据库对应
+     */
     ROLE_ADMIN(1, "ROLE_ADMIN", "系统管理员"),
     ROLE_DOCTOR(2, "ROLE_DOCTOR", "住院医师"),
-    ROLE_NURSE(3, "ROLE_NURSE", "护士"),
-    ROLE_FRONT(4, "ROLE_FRONT", "服务前台"),
+    ROLE_NURSE(4, "ROLE_NURSE", "护士"),
+    ROLE_FRONT(3, "ROLE_FRONT", "服务前台"),
     ROLE_PATIENT(5, "ROLE_PATIENT", "患者") ;
 
     int rid ;

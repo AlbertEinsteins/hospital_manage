@@ -18,7 +18,8 @@
 
     <select id="selectAllWithRid" resultType="com.graduate.hospital_manage.model.Menu">
         SELECT m.*, r.rid
-        FROM menu m LEFT JOIN role_menu_relation rmr ON m.`menu_id` = rmr.`menu_id`
-                    LEFT JOIN role r ON r.`rid` = rmr.`role_id`
+        FROM menu m JOIN role_menu_relation rmr ON m.`menu_id` = rmr.`menu_id`
+                    JOIN role r ON r.`rid` = rmr.`role_id`
+        order by m.orders
     </select>
 </mapper>

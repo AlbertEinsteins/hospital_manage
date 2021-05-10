@@ -27,6 +27,7 @@ public class Pay implements Serializable {
     private BigDecimal    preAmount ;
     @TableField("pay_amount")
     private BigDecimal    payAmount ;
+
     @TableField("pay_date")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime payDate ;

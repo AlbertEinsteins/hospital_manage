@@ -7,8 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OutHospitalDto extends BaseDtoImpl<OutHospitalized> {
-
-
     //接收vo
     private Integer tid ;
 }

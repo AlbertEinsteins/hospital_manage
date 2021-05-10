@@ -8,8 +8,8 @@
     
     <select id="selectDoctorsWithPos" resultType="map">
         SELECT d.*, dp.name as posName, dt.name as typeName
-        FROM doctor d LEFT JOIN doctor_position dp ON d.pid = dp.`pid`
-                      LEFT JOIN doctor_type dt ON d.`tid` = dt.`tid`
+        FROM doctor d JOIN doctor_position dp ON d.pid = dp.`pid`
+                      JOIN doctor_type dt ON d.`tid` = dt.`tid`
         <where>
             <if test="doctor.tid != null">
                 d.tid = #{doctor.tid}
@@ -27,5 +27,50 @@
                 and d.is_retire = #{doctor.isRetire}
             </if>
         </where>
+    </select>
+
+    <select id="selectPatientsWithDoctorusername" resultType="map">
+        SELECT h.`name` as personName, h.`hid`, h.`body_status`,
+               h.`emerge_name`, h.`emerge_phone`, h.`wid`, h.`sid`, dt.`name`,
+               h.`enroll_time`
+        FROM
+          doctor d JOIN hospitalized h ON h.`did` = d.`did`
+          JOIN `user` u ON u.`fullname` = d.`name`
+          JOIN doctor_type dt ON dt.`tid` = d.`tid`
+        <where>
+            <if test="username != null">
+              u.username = #{username}
+            </if>
+            <if test="isActive != null">
+              and h.is_active = #{isActive}
+            </if>
+        </where>
+        ORDER BY h.`enroll_time` DESC
+    </select>
+
+    <select id="selectPatientsInActiveWithDoctorusername" resultType="map">
+        SELECT h.`name` as personName, h.`hid`, h.`body_status`,
+        h.`emerge_name`, h.`emerge_phone`, h.`wid`, h.`sid`, dt.`name`,
+        h.`enroll_time`
+        FROM
+        doctor d JOIN hospitalized h ON h.`did` = d.`did`
+        JOIN `user` u ON u.`fullname` = d.`name`
+        JOIN doctor_type dt ON dt.`tid` = d.`tid`
+        <where>
+            h.is_active = 0
+            <if test="username != null">
+              and u.username = #{username}
+            </if>
+            <if test="hid != null and hid != ''">
+              and h.hid = #{hid}
+            </if>
+            <if test="startTime != null">
+              and h.enroll_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+              and h.enroll_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY h.`enroll_time` DESC
     </select>
 </mapper>

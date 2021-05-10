@@ -36,7 +36,7 @@ public class OutHospitalizedController {
     private LogUtils logUtils ;
 
     @PostMapping("/enroll")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('FRONT')")
     public Result outEnroll(@RequestParam("hid") String hid) throws MessageException {
         //判断是否存在
         EnHospitalized enHospitalized = this.enHospitalizedService.getById(hid) ;

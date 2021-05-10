@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @RestController
@@ -29,19 +30,19 @@ import java.util.Optional;
 public class PayController {
 
     @Autowired
-    private PayService payService ;
+    private PayService payService;
 
     @Autowired
-    private PayTypeService payTypeService ;
+    private PayTypeService payTypeService;
 
     @Autowired
-    private EnHospitalizedService enHospitalizedService ;
+    private EnHospitalizedService enHospitalizedService;
 
     @Autowired
     private OutHospitalizedService outHospitalizedService;
 
     @Autowired
-    private LogUtils logUtils ;
+    private LogUtils logUtils;
 
     @PostMapping("/pre_pay")
     public Result enrollRecord(@RequestBody Pay pay) {
@@ -49,19 +50,19 @@ public class PayController {
         //TODO 预缴费
         Optional<EnHospitalized> optional = this.enHospitalizedService
                 .findOneById(pay.getHid());
-        if(!optional.isPresent()) {
-            return Result.FAILURE("住院号不存在!") ;
+        if (!optional.isPresent()) {
+            return Result.FAILURE("住院号不存在!");
         }
 
-        pay.setStatus(PayStatus.PRE_PAY.status()) ;
+        pay.setStatus(PayStatus.PRE_PAY.status());
         Optional<Pay> byHid = this.payService.findByHid(pay.getHid());
 
         if (byHid.isPresent()) {
             Pay existPay = byHid.get();
-            existPay.setPreAmount(existPay.getPreAmount().add(pay.getPreAmount())) ;
-            this.payService.updateById(existPay) ;
+            existPay.setPreAmount(existPay.getPreAmount().add(pay.getPreAmount()));
+            this.payService.updateById(existPay);
         } else {
-            this.payService.save(pay) ;
+            this.payService.save(pay);
         }
 
         this.logUtils.writeLog(ELogLevel.INFO, "预缴费",
@@ -73,26 +74,26 @@ public class PayController {
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'FRONT', 'NURSE')")
     public Result recordSearch(@RequestBody PayDto queryVo) {
         return Result.SUCCESS(this.payService.pageResult(
-                new Page<>(queryVo.getPagenum(), queryVo.getPagesize()), queryVo.getData())) ;
+                new Page<>(queryVo.getPagenum(), queryVo.getPagesize()), queryVo.getData()));
     }
 
     @GetMapping("/pay_items")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'FRONT', 'NURSE')")
     public Result payItems(@RequestParam("hid") String hid) throws Exception {
         this.enHospitalizedService.findOneById(hid)
-                .orElseThrow(() -> new MessageException(ResultCode.Fail, "该住院号不存在")) ;
+                .orElseThrow(() -> new MessageException(ResultCode.Fail, "该住院号不存在"));
 
         this.outHospitalizedService.findOnebyHid(hid)
-                .orElseThrow(() -> new MessageException(ResultCode.Fail, "该用户还未进行出院登记")) ;
+                .orElseThrow(() -> new MessageException(ResultCode.Fail, "该用户还未进行出院登记"));
 
 
-        return Result.SUCCESS(this.payService.getCostByHid(hid)) ;
+        return Result.SUCCESS(this.payService.getCostByHid(hid));
     }
 
     @GetMapping("pay_rtnitems")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'FRONT', 'NURSE')")
     public Result payRtnItems(@RequestParam("hid") String hid) {
-        return Result.SUCCESS(this.payService.getRtnByHid(hid)) ;
+        return Result.SUCCESS(this.payService.getRtnByHid(hid));
     }
 
 
@@ -103,28 +104,36 @@ public class PayController {
         LambdaQueryWrapper<Pay> wrapper = Wrappers.<Pay>lambdaQuery()
                 .eq(Pay::getHid, hid);
 
-        return Result.SUCCESS(this.payService.list(wrapper)) ;
+        return Result.SUCCESS(this.payService.list(wrapper));
     }
 
 
     @PutMapping("/doSuccess")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
-    public Result paySuccess(@RequestParam("hid") String hid) {
-        this.logUtils.writeLog(ELogLevel.INFO, "支付成功（返还成功）",
-                MessageFormatter.format("住院号：{}, 支付成功", hid).getMessage()) ;
-        this.payService.findByHid(hid)
-                .ifPresent(pay -> {
-                    pay.setStatus(PayStatus.PAY.status()) ;
-                    this.payService.updateById(pay) ;
-                });
-        return Result.SUCCESS() ;
+    public Result paySuccess(@RequestParam("hid") String hid, @RequestParam("cost") BigDecimal cost) {
+        Optional<Pay> existHid = this.payService.findByHid(hid);
+        if (existHid.isPresent()) {
+            Pay pay = existHid.get();
+
+            if(pay.getStatus() == PayStatus.PAY.status()) {
+                return Result.FAILURE("该用户已经支付");
+            }
+
+            pay.setStatus(PayStatus.PAY.status());
+            pay.setPayAmount(cost);
+
+            this.payService.updateById(pay);
+            this.logUtils.writeLog(ELogLevel.INFO, "支付成功（返还成功）",
+                    MessageFormatter.format("住院号：{}, 支付成功", hid).getMessage());
+        }
+        return Result.SUCCESS();
     }
 
 
     @GetMapping("/paytypes")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'FRONT', 'NURSE')")
     public Result getPayTypes() {
-        return Result.SUCCESS(this.payTypeService.list()) ;
+        return Result.SUCCESS(this.payTypeService.list());
     }
 
 }

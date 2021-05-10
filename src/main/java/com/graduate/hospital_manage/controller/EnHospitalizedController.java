@@ -26,7 +26,7 @@ public class EnHospitalizedController {
     private EnHospitalizedService enHospitalizedService ;
 
     @PostMapping("/enroll")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('FRONT')")
     public Result enRollHospital(@Valid @RequestBody EnHospitalized enHospitalized) {
 
         Optional<EnHospitalized> existItem =

@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.graduate.hospital_manage.dto.DoctorDto;
+import com.graduate.hospital_manage.dto.PatientDto;
 import com.graduate.hospital_manage.model.Doctor;
+import com.graduate.hospital_manage.model.EnHospitalized;
 import com.graduate.hospital_manage.model.constant.ELogLevel;
 import com.graduate.hospital_manage.response.Result;
 import com.graduate.hospital_manage.service.DoctorService;
@@ -15,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/doc")
@@ -69,4 +73,19 @@ public class DoctorController {
         return Result.SUCCESS() ;
     }
 
+    @GetMapping("/getpatients")
+    public Result getPatients(@RequestParam String username,
+                              @RequestParam Integer isActive,
+                              @RequestParam(defaultValue = "1") Integer pagenum,
+                              @RequestParam(defaultValue = "10") Integer pagesize) {
+        Page<Map> page = new Page<>(pagenum, pagesize);
+        return Result.SUCCESS(doctorService.findByUsername(username, isActive, page));
+    }
+
+    @PostMapping("/getInactivepatients")
+    public Result getPatients(@RequestBody PatientDto patientDto) {
+        Page<Map> page = new Page<>(patientDto.getPagenum(), patientDto.getPagesize());
+        return Result.SUCCESS(doctorService.findByUsername(patientDto.getHid(),
+                    patientDto.getUsername(), patientDto.getStartTime(), patientDto.getEndTime(), page));
+    }
 }

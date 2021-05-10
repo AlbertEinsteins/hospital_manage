@@ -26,7 +26,9 @@ public class MyExceptionHandler {
     public Result runTimeException(RuntimeException e) {
         e.printStackTrace();
 
-        this.logUtils.writeLog(ELogLevel.ERROR, e.getMessage(), "系统内部错误") ;
+        this.logUtils.writeLog(ELogLevel.ERROR, e.getMessage()
+                .substring(0, e.getMessage().length() > 30 ? 30: e.getMessage().length()),
+                "系统内部错误") ;
         return Result.FAILURE("服务器错误") ;
     }
 

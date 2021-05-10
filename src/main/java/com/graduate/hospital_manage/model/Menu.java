@@ -24,5 +24,5 @@ public class Menu implements Serializable {
 
     @JsonIgnore
     @TableField(exist = false)
-    private Integer rid ;
+    private Integer rid ;           //作为外键
 }
